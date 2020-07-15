@@ -6,8 +6,8 @@ from resources import parser, getTimeWindow
 
 api = Namespace('favorites', description = 'Access favorite items')
 
-@api.param('end', description='end date: YYYY-MM-DD')
-@api.param('start', description='start date: YYYY-MM-DD')
+@api.param('end', description='end date (exclusive): YYYY-MM-DD')
+@api.param('start', description='start date (inclusive): YYYY-MM-DD')
 class ParamDocumenter():
     pass
 

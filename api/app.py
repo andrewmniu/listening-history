@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint
 from config import Config
-from extensions import db, api
+from extensions import db, api, cors
 
 def register_extensions(app):
     db.init_app(app)
@@ -8,6 +8,7 @@ def register_extensions(app):
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
     app.register_blueprint(blueprint)
+    cors.init_app(app)
 
 def add_namespaces(api):
     from resources.history_resource import api as history_api
