@@ -1,15 +1,21 @@
 from flask_restx import Namespace, Resource, fields
 from models.history import History
+from models.track import Track
 from extensions import db
 from resources import parser, getTimeWindow
 
 api = Namespace('history', description='Access listening history')
 
+track_fields = api.model('Track', {
+    'id': fields.String(description='Spotify Track id'),
+    'name': fields.String(description='Name of track played'),
+    'album': fields.String(description='Album of track played'),
+    'artist': fields.String(description='Artist of track played')
+})
+
 history_fields = api.model('Play', {
     'played_at': fields.DateTime(readOnly=True, description='Time that a track was played at'),
-    'name': fields.String(attribute='track.name', description='Name of track played'),
-    'album': fields.String(attribute='track.album', description='Album of track played'),
-    'artist': fields.String(attribute='track.artist', description='Artist of track played')
+    'track': fields.Nested(track_fields)
 })
 
 @api.route('/')
@@ -19,4 +25,10 @@ class HistoryList(Resource):
         args = parser.parse_args()
         start, end = getTimeWindow(args)
         limit = args['limit'] if args['limit'] else 100
-        return History.query.filter(db.func.date(History.played_at) > start, db.func.date(History.played_at) < end).order_by(History.played_at.desc()).limit(limit).all()
+        query = db.session.query(History.played_at, Track)\
+            .join(Track, History.track_id == Track.id, isouter=True)\
+            .filter(db.func.date(History.played_at) > start, db.func.date(History.played_at) < end)\
+            .order_by(db.desc(History.played_at)).limit(limit).all()
+
+        payload = [{'played_at': played_at, 'track': track} for played_at, track in query]
+        return payload

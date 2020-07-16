@@ -3,6 +3,7 @@ from models.history import History
 from models.track import Track
 from extensions import db
 from resources import parser, getTimeWindow
+from resources.history_resource import track_fields
 
 api = Namespace('favorites', description = 'Access favorite items')
 
@@ -12,10 +13,8 @@ class ParamDocumenter():
     pass
 
 track_fields = api.model('Favorite Track', {
-    'track': fields.String(attribute='name', description='Name of track played'),
-    'album': fields.String(attribute='album', description='Album of track played'),
-    'artist': fields.String(attribute='artist', description='Artist of track played'),
-    'times_played': fields.Integer(attribute='count', description='Artist of track played'),
+    'track': fields.Nested(track_fields),
+    'times_played': fields.Integer(description='Artist of track played'),
 })
 
 @api.route('/tracks')
@@ -32,11 +31,7 @@ class FavoriteTrackList(Resource, ParamDocumenter):
             .group_by(Track.id)\
             .order_by(db.desc('n')).limit(limit).all()
 
-        payload = []
-        for track, count in query:
-            track.count = count
-            payload.append(track)
-
+        payload = [{'track': track, 'times_played': count} for track, count in query]
         return payload
 
 artist_fields = api.model('Favorite Artist', {

@@ -1,0 +1,12 @@
+.list-group{
+  text-align: center;
+  height: 70vh;
+  overflow-y:scroll;
+}
+
+.popover{
+  max-width: 350px;
+}
+.calendar{
+  width: 326px;
+}
