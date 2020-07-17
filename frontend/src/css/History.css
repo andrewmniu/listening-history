@@ -1,7 +1,12 @@
 .list-group{
-  text-align: center;
   height: 70vh;
   overflow-y:scroll;
+  scroll-behavior: smooth;
+  /* transition: 10000ms; */
+}
+
+.list-group-item{
+  text-align: left;
 }
 
 .popover{

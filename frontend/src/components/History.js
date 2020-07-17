@@ -28,6 +28,7 @@ class History extends React.Component {
       const time = new Date(track_item.played_at);
       return (
         <li className="list-group-item" key={idx}>
+          <img src={track_item.track.artwork}/>
           {time.toLocaleDateString()} at {time.toLocaleTimeString()}{" "}
           {track_item.track.name} by {track_item.track.artist}
         </li>
@@ -49,14 +50,32 @@ class History extends React.Component {
       .get("http://localhost:5000/api/history", {
         params: payload,
       })
-      .then((res) =>
-        this.setState({ data: res.data.history, pages: res.data.pages })
-      );
+      .then((res) => {
+        this.setState({ pages: res.data.pages });
+        return res.data.history;
+      })
+      .then((plays) => {
+        const track_ids = plays.map((play) => play.track.id);
+        axios
+          .get("http://localhost:5000/api/spotify/tracks", {
+            params: { ids: track_ids + "" },
+          })
+          .then((res) => {
+            for (let i = 0; i < plays.length; i++){
+              plays[i].track.artwork = res.data[i].artwork
+            }
+            this.setState({data: plays})
+            this.refs.scroller.scrollTop=0
+          });
+      });
   };
 
   handleDates = async (item) => {
-
-    await this.setState({startDate: item.selection.startDate, endDate: item.selection.endDate, page: 1});
+    await this.setState({
+      startDate: item.selection.startDate,
+      endDate: item.selection.endDate,
+      page: 1,
+    });
     this.getHistory();
   };
 
@@ -99,8 +118,8 @@ class History extends React.Component {
         );
       }
     };
-    if (this.state.pages <= 7){
-      generate(1, this.state.pages)
+    if (this.state.pages <= 7) {
+      generate(1, this.state.pages);
       return items;
     }
 
@@ -145,11 +164,11 @@ class History extends React.Component {
           1
         </Pagination.Item>
       );
-      if (this.state.page !== 4){
+      if (this.state.page !== 4) {
         items.push(<Pagination.Ellipsis disabled />);
       }
       generate(first, last);
-      if (this.state.page !== this.state.pages - 3){
+      if (this.state.page !== this.state.pages - 3) {
         items.push(<Pagination.Ellipsis disabled />);
       }
       items.push(
@@ -168,7 +187,10 @@ class History extends React.Component {
 
   handlePagination = async (e) => {
     let page;
-    if (e.target.classList.contains("disabled") || e.target.tagName === "SPAN") {
+    if (
+      e.target.classList.contains("disabled") ||
+      e.target.tagName === "SPAN"
+    ) {
       return;
     }
     switch (e.target.text) {
@@ -201,7 +223,7 @@ class History extends React.Component {
         >
           <button className="btn btn-primary">Calendar</button>
         </OverlayTrigger>
-        <ul className="history list-group">{this.renderItems()}</ul>
+        <ul className="history list-group" ref="scroller">{this.renderItems()}</ul>
         <Pagination size="sm" activePage={this.state.page}>
           <li
             class={`page-item ${this.state.page === 1 ? "disabled" : ""}`}
@@ -212,13 +234,13 @@ class History extends React.Component {
             </a>
           </li>
           {this.createPagination()}
-          <li class={`page-item ${
-            this.state.page === this.state.pages ? "disabled" : ""
-          }`} onClick={this.handlePagination}>
-            <a
-              class="page-link"
-              href="#"
-            >
+          <li
+            class={`page-item ${
+              this.state.page === this.state.pages ? "disabled" : ""
+            }`}
+            onClick={this.handlePagination}
+          >
+            <a class="page-link" href="#">
               ›
             </a>
           </li>

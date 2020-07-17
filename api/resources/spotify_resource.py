@@ -22,5 +22,5 @@ class TrackList(Resource):
     def get(self):
         args = parser.parse_args()
         tracks = spotify.get_tracks(args['ids'])['tracks']
-        payload = [{'id': track['id'], 'album': track['album']['name'], 'artwork': track['album']['images'][1]['url']} for track in tracks]
+        payload = [{'id': track['id'], 'album': track['album']['name'], 'artwork': track['album']['images'][2]['url']} for track in tracks]
         return payload
