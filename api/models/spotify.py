@@ -88,8 +88,4 @@ class SpotifyAPI:
                 "Authorization": f"Bearer {self.__access_token}"
             }
         )
-        print(response.url)
-        if response.ok:
-            return response
-        else:
-            print("There was an error getting the tracks.")
+        return response

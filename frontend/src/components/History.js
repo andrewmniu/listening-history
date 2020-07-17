@@ -1,11 +1,9 @@
 import React from "react";
 import axios from "axios";
 import "../css/History.css";
-import "react-date-range/dist/styles.css"; // main css file
-import "react-date-range/dist/theme/default.css";
-import { DateRange } from "react-date-range";
-import { Popover, OverlayTrigger, Button, Pagination } from "react-bootstrap";
 import PropTypes from "prop-types";
+import PaginationWrap from "./Pagination.js";
+import Calendar from "./Calendar.js";
 
 class History extends React.Component {
   constructor(props) {
@@ -23,12 +21,12 @@ class History extends React.Component {
     this.getHistory();
   }
 
-  renderItems = () => {
+  renderList = () => {
     return this.state.data.map((track_item, idx) => {
       const time = new Date(track_item.played_at);
       return (
         <li className="list-group-item" key={idx}>
-          <img src={track_item.track.artwork}/>
+          <img src={track_item.track.artwork} />
           {time.toLocaleDateString()} at {time.toLocaleTimeString()}{" "}
           {track_item.track.name} by {track_item.track.artist}
         </li>
@@ -54,19 +52,21 @@ class History extends React.Component {
         this.setState({ pages: res.data.pages });
         return res.data.history;
       })
-      .then((plays) => {
-        const track_ids = plays.map((play) => play.track.id);
-        axios
-          .get("http://localhost:5000/api/spotify/tracks", {
-            params: { ids: track_ids + "" },
-          })
-          .then((res) => {
-            for (let i = 0; i < plays.length; i++){
-              plays[i].track.artwork = res.data[i].artwork
-            }
-            this.setState({data: plays})
-            this.refs.scroller.scrollTop=0
-          });
+      .then((history) => this.getArtwork(history));
+  };
+
+  getArtwork = (history) => {
+    const track_ids = history.map((play) => play.track.id);
+    axios
+      .get("http://localhost:5000/api/spotify/tracks", {
+        params: { ids: track_ids + "" },
+      })
+      .then((res) => {
+        for (let i = 0; i < history.length; i++) {
+          history[i].track.artwork = res.data[i].artwork;
+        }
+        this.setState({ data: history });
+        this.refs.scroller.scrollTop = 0;
       });
   };
 
@@ -79,134 +79,7 @@ class History extends React.Component {
     this.getHistory();
   };
 
-  getPopover = () => {
-    const selectionRange = {
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      key: "selection",
-    };
-    return (
-      <Popover id="popover-basic">
-        <Popover.Title as="h3">Popover right</Popover.Title>
-        <Popover.Content>
-          <DateRange
-            className="calendar"
-            ranges={[selectionRange]}
-            minDate={new Date(2019, 5, 13)}
-            maxDate={new Date()}
-            shownDate={new Date()}
-            onChange={this.handleDates}
-          />
-        </Popover.Content>
-      </Popover>
-    );
-  };
-
-  createPagination = () => {
-    const items = [];
-    const generate = (first, last) => {
-      for (let i = first; i <= last; i++) {
-        const active = i === this.state.page ? "active" : "";
-        items.push(
-          <Pagination.Item
-            key={i}
-            active={i === this.state.page}
-            onClick={this.handlePagination}
-          >
-            {i}
-          </Pagination.Item>
-        );
-      }
-    };
-    if (this.state.pages <= 7) {
-      generate(1, this.state.pages);
-      return items;
-    }
-
-    let first, last;
-    if (this.state.page <= 3) {
-      first = 1;
-      last = 5;
-      generate(first, last);
-      items.push(<Pagination.Ellipsis disabled />);
-      items.push(
-        <Pagination.Item
-          key={this.state.pages}
-          active={this.state.pages === this.state.page}
-          onClick={this.handlePagination}
-        >
-          {this.state.pages}
-        </Pagination.Item>
-      );
-    } else if (this.state.page >= this.state.pages - 2) {
-      first = this.state.pages - 4;
-      last = this.state.pages;
-      items.push(
-        <Pagination.Item
-          key={1}
-          active={1 === this.state.page}
-          onClick={this.handlePagination}
-        >
-          1
-        </Pagination.Item>
-      );
-      items.push(<Pagination.Ellipsis disabled />);
-      generate(first, last);
-    } else {
-      first = this.state.page - 2;
-      last = this.state.page + 2;
-      items.push(
-        <Pagination.Item
-          key={1}
-          active={1 === this.state.page}
-          onClick={this.handlePagination}
-        >
-          1
-        </Pagination.Item>
-      );
-      if (this.state.page !== 4) {
-        items.push(<Pagination.Ellipsis disabled />);
-      }
-      generate(first, last);
-      if (this.state.page !== this.state.pages - 3) {
-        items.push(<Pagination.Ellipsis disabled />);
-      }
-      items.push(
-        <Pagination.Item
-          key={this.state.pages}
-          active={this.state.pages === this.state.page}
-          onClick={this.handlePagination}
-        >
-          {this.state.pages}
-        </Pagination.Item>
-      );
-    }
-
-    return items;
-  };
-
-  handlePagination = async (e) => {
-    let page;
-    if (
-      e.target.classList.contains("disabled") ||
-      e.target.tagName === "SPAN"
-    ) {
-      return;
-    }
-    switch (e.target.text) {
-      case "‹":
-        page = this.state.page === 1 ? 1 : this.state.page - 1;
-        break;
-      case "›":
-        page =
-          this.state.page === this.state.pages
-            ? this.state.pages
-            : this.state.page + 1;
-        break;
-      default:
-        page = parseInt(e.target.text);
-        break;
-    }
+  setPage = async (page) => {
     await this.setState({ page });
     this.getHistory();
   };
@@ -215,36 +88,20 @@ class History extends React.Component {
     return (
       <React.Fragment>
         <h1>History</h1>
-        <OverlayTrigger
-          trigger="click"
-          placement="bottom"
-          overlay={this.getPopover()}
-          rootClose={true}
-        >
-          <button className="btn btn-primary">Calendar</button>
-        </OverlayTrigger>
-        <ul className="history list-group" ref="scroller">{this.renderItems()}</ul>
-        <Pagination size="sm" activePage={this.state.page}>
-          <li
-            class={`page-item ${this.state.page === 1 ? "disabled" : ""}`}
-            onClick={this.handlePagination}
-          >
-            <a class="page-link" href="#">
-              ‹
-            </a>
-          </li>
-          {this.createPagination()}
-          <li
-            class={`page-item ${
-              this.state.page === this.state.pages ? "disabled" : ""
-            }`}
-            onClick={this.handlePagination}
-          >
-            <a class="page-link" href="#">
-              ›
-            </a>
-          </li>
-        </Pagination>
+        <Calendar
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
+          handleDates={this.handleDates}
+        ></Calendar>
+        <ul className="history list-group" ref="scroller">
+          {this.renderList()}
+        </ul>
+
+        <PaginationWrap
+          page={this.state.page}
+          pages={this.state.pages}
+          setPage={this.setPage}
+        ></PaginationWrap>
       </React.Fragment>
     );
   }
