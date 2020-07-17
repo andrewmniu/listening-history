@@ -5,6 +5,8 @@ parser = reqparse.RequestParser()
 parser.add_argument('start', location='args')
 parser.add_argument('end', location='args')
 parser.add_argument('limit', type=int, location='args')
+parser.add_argument('page', type=int, location='args')
+parser.add_argument('per_page', type=int, location='args')
 
 def getTimeWindow(args):
     start = datetime.strptime(args['start'], '%Y-%m-%d') - timedelta(days=1) if args['start'] else datetime(1970,1,1)

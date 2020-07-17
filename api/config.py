@@ -8,7 +8,7 @@ load_dotenv(dotenv_path)
 
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS=False
-    SQLALCHEMY_POOL_RECYCLE=600
+    SQLALCHEMY_POOL_RECYCLE=300
     ENV='development'
     DEBUG=True
     db_host = '127.0.0.1'
