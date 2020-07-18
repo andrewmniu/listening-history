@@ -55,19 +55,40 @@ class History extends React.Component {
       .then((history) => this.getArtwork(history));
   };
 
-  getArtwork = (history) => {
-    const track_ids = history.map((play) => play.track.id);
-    axios
-      .get("http://localhost:5000/api/spotify/tracks", {
-        params: { ids: track_ids + "" },
-      })
-      .then((res) => {
-        for (let i = 0; i < history.length; i++) {
-          history[i].track.artwork = res.data[i].artwork;
-        }
-        this.setState({ data: history });
-        this.refs.scroller.scrollTop = 0;
-      });
+  getArtwork = async (history) => {
+    const tracks = history.map((play) => {
+      return {
+        album: `${play.track.album} ${play.track.artist}`,
+        id: play.track.id,
+        albumArtwork: "",
+      };
+    });
+    const notCached = {};
+    tracks.forEach((track) => {
+      if (this.props.albumArtwork[track.album]) {
+        track.albumArtwork = this.props.albumArtwork[track.album];
+      } else if (!notCached[track.album]) {
+        notCached[track.album] = track.id;
+      }
+    });
+    console.log("NOT CACHED");
+    console.log(notCached);
+    if (Object.keys(notCached).length) {
+      await axios
+        .get("http://localhost:5000/api/spotify/tracks", {
+          params: { ids: Object.values(notCached) + "" },
+        })
+        .then((res) => {
+          this.props.addArtwork(notCached, res.data);
+        });
+    }
+    history.forEach((play) => {
+      play.track.artwork = this.props.albumArtwork[
+        `${play.track.album} ${play.track.artist}`
+      ];
+    });
+    this.setState({ data: history });
+    this.refs.scroller.scrollTop = 0;
   };
 
   handleDates = async (item) => {
@@ -96,7 +117,6 @@ class History extends React.Component {
         <ul className="history list-group" ref="scroller">
           {this.renderList()}
         </ul>
-
         <PaginationWrap
           page={this.state.page}
           pages={this.state.pages}
@@ -120,5 +140,10 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+History.propTypes = {
+  albumArtwork: PropTypes.object.isRequired,
+  addArtwork: PropTypes.func.isRequired,
+};
 
 export default History;

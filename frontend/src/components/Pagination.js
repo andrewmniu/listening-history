@@ -138,4 +138,10 @@ class PaginationWrap extends React.Component {
   }
 }
 
+PaginationWrap.propTypes = {
+  page: PropTypes.number.isRequired,
+  pages: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired
+}
+
 export default PaginationWrap;

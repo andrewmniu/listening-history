@@ -44,4 +44,10 @@ class Calendar extends React.Component {
   }
 }
 
+Calendar.propTypes = {
+  startDate: PropTypes.instanceOf(Date).isRequired,
+  endDate: PropTypes.instanceOf(Date).isRequired,
+  handleDates: PropTypes.func.isRequired
+}
+
 export default Calendar;

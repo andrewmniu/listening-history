@@ -12,6 +12,7 @@ parser.add_argument('ids', action='split', location='args')
 spotify_track_fields = api.model('Spotify Track', {
     'id': fields.String(description='Spotify Track id'),
     'album': fields.String(description='Album of track played'),
+    'artist': fields.String(description='Artist of track played'),
     'artwork': fields.String(description='Link to album artwork')
 })
 
@@ -21,6 +22,10 @@ class TrackList(Resource):
     @api.marshal_list_with(spotify_track_fields)
     def get(self):
         args = parser.parse_args()
-        tracks = spotify.get_tracks(args['ids'])['tracks']
-        payload = [{'id': track['id'], 'album': track['album']['name'], 'artwork': track['album']['images'][2]['url']} for track in tracks]
+        data = spotify.get_tracks(args['ids'])
+        if(data and data['tracks'][0]):
+            tracks = spotify.get_tracks(args['ids'])['tracks']
+        else:
+            api.abort(404, 'id not found')
+        payload = [{'id': track['id'], 'album': track['album']['name'], 'artist': track['artists'][0]['name'], 'artwork': track['album']['images'][2]['url']} for track in tracks if track]
         return payload
