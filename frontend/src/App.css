@@ -1,3 +1,22 @@
 .App {
   text-align: center;
 }
+
+.list-group{
+  height: 70vh;
+  overflow-y:scroll;
+  scroll-behavior: smooth;
+  /* transition: 10000ms; */
+}
+
+.list-group-item{
+  text-align: left;
+}
+
+.popover{
+  max-width: 350px;
+}
+
+.calendar{
+  width: 326px;
+}

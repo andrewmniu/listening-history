@@ -7,7 +7,6 @@ class PaginationWrap extends React.Component {
     const items = [];
     const generate = (first, last) => {
       for (let i = first; i <= last; i++) {
-        const active = i === this.props.page ? "active" : "";
         items.push(
           <Pagination.Item
             key={i}
@@ -29,7 +28,7 @@ class PaginationWrap extends React.Component {
       first = 1;
       last = 5;
       generate(first, last);
-      items.push(<Pagination.Ellipsis disabled />);
+      items.push(<Pagination.Ellipsis key={0} disabled />);
       items.push(
         <Pagination.Item
           key={this.props.pages}
@@ -51,7 +50,7 @@ class PaginationWrap extends React.Component {
           1
         </Pagination.Item>
       );
-      items.push(<Pagination.Ellipsis disabled />);
+      items.push(<Pagination.Ellipsis key={0} disabled />);
       generate(first, last);
     } else {
       first = this.props.page - 2;
@@ -66,11 +65,11 @@ class PaginationWrap extends React.Component {
         </Pagination.Item>
       );
       if (this.props.page !== 4) {
-        items.push(<Pagination.Ellipsis disabled />);
+        items.push(<Pagination.Ellipsis key={0} disabled />);
       }
       generate(first, last);
       if (this.props.page !== this.props.pages - 3) {
-        items.push(<Pagination.Ellipsis disabled />);
+        items.push(<Pagination.Ellipsis key={this.props.pages+1} disabled />);
       }
       items.push(
         <Pagination.Item
@@ -113,23 +112,23 @@ class PaginationWrap extends React.Component {
 
   render() {
     return (
-      <Pagination size="sm" activePage={this.props.page}>
+      <Pagination size="sm" activepage={this.props.page}>
         <li
-          class={`page-item ${this.props.page === 1 ? "disabled" : ""}`}
+          className={`page-item ${this.props.page === 1 ? "disabled" : ""}`}
           onClick={this.handlePagination}
         >
-          <a class="page-link" href="#">
+          <a className="page-link" href="#">
             ‹
           </a>
         </li>
         {this.createPagination()}
         <li
-          class={`page-item ${
+          className={`page-item ${
             this.props.page === this.props.pages ? "disabled" : ""
           }`}
           onClick={this.handlePagination}
         >
-          <a class="page-link" href="#">
+          <a className="page-link" href="#">
             ›
           </a>
         </li>

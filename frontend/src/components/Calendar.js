@@ -22,7 +22,7 @@ class Calendar extends React.Component {
             ranges={[selectionRange]}
             minDate={new Date(2019, 5, 13)}
             maxDate={new Date()}
-            shownDate={new Date()}
+            shownDate={this.props.endDate}
             onChange={this.props.handleDates}
           />
         </Popover.Content>

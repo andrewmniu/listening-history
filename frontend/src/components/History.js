@@ -1,9 +1,9 @@
 import React from "react";
 import axios from "axios";
 import "../css/History.css";
-import PropTypes from "prop-types";
 import PaginationWrap from "./Pagination.js";
 import Calendar from "./Calendar.js";
+import PropTypes from "prop-types";
 
 class History extends React.Component {
   constructor(props) {
@@ -15,6 +15,7 @@ class History extends React.Component {
       page: 1,
       pages: 1,
     };
+    this.scroller = React.createRef();
   }
 
   componentDidMount() {
@@ -26,18 +27,18 @@ class History extends React.Component {
       const time = new Date(track_item.played_at);
       return (
         <li className="list-group-item" key={idx}>
-          <img src={track_item.track.artwork} />
-          {time.toLocaleDateString()} at {time.toLocaleTimeString()}{" "}
-          {track_item.track.name} by {track_item.track.artist}
+          <img src={track_item.track.artwork} alt={track_item.track.album} />
+          {track_item.track.name} by {track_item.track.artist} played on{" "}
+          {time.toDateString()} at {time.toLocaleTimeString()}
         </li>
       );
     });
   };
 
   getHistory = () => {
-    const startDate = this.state.startDate.toISOString().substring(0, 10);
-    let endDate = new Date(this.state.endDate.getTime() + 86400000);
-    endDate = endDate.toISOString().substring(0, 10);
+    const [startDate, endDate] = this.props.formatDates(this.state.startDate, this.state.endDate);
+
+    let history;
     const payload = {
       start: startDate,
       end: endDate,
@@ -50,45 +51,27 @@ class History extends React.Component {
       })
       .then((res) => {
         this.setState({ pages: res.data.pages });
-        return res.data.history;
+        history = res.data.history;
       })
-      .then((history) => this.getArtwork(history));
-  };
-
-  getArtwork = async (history) => {
-    const tracks = history.map((play) => {
-      return {
-        album: `${play.track.album} ${play.track.artist}`,
-        id: play.track.id,
-        albumArtwork: "",
-      };
-    });
-    const notCached = {};
-    tracks.forEach((track) => {
-      if (this.props.albumArtwork[track.album]) {
-        track.albumArtwork = this.props.albumArtwork[track.album];
-      } else if (!notCached[track.album]) {
-        notCached[track.album] = track.id;
-      }
-    });
-    console.log("NOT CACHED");
-    console.log(notCached);
-    if (Object.keys(notCached).length) {
-      await axios
-        .get("http://localhost:5000/api/spotify/tracks", {
-          params: { ids: Object.values(notCached) + "" },
-        })
-        .then((res) => {
-          this.props.addArtwork(notCached, res.data);
+      .then(() => {
+        const albums = {};
+        history.forEach((play) => {
+          if (!albums[`${play.track.album} ${play.track.artist}`]) {
+            albums[`${play.track.album} ${play.track.artist}`] = play.track.id;
+          }
         });
-    }
-    history.forEach((play) => {
-      play.track.artwork = this.props.albumArtwork[
-        `${play.track.album} ${play.track.artist}`
-      ];
-    });
-    this.setState({ data: history });
-    this.refs.scroller.scrollTop = 0;
+        return albums;
+      })
+      .then((albums) => this.props.getArtwork(albums))
+      .then(() => {
+        history.forEach((play) => {
+          play.track.artwork = this.props.albumArtwork[
+            `${play.track.album} ${play.track.artist}`
+          ];
+        });
+        this.setState({ data: history });
+        this.scroller.current.scrollTop = 0;
+      })
   };
 
   handleDates = async (item) => {
@@ -114,7 +97,7 @@ class History extends React.Component {
           endDate={this.state.endDate}
           handleDates={this.handleDates}
         ></Calendar>
-        <ul className="history list-group" ref="scroller">
+        <ul className="history list-group" ref={this.scroller}>
           {this.renderList()}
         </ul>
         <PaginationWrap
@@ -126,20 +109,6 @@ class History extends React.Component {
     );
   }
 }
-
-axios.interceptors.request.use(
-  (config) => {
-    console.log(
-      `${config.method.toUpperCase()} request sent to ${
-        config.url
-      } at ${new Date().getTime()}`
-    );
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 History.propTypes = {
   albumArtwork: PropTypes.object.isRequired,
