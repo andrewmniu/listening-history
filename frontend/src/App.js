@@ -14,16 +14,7 @@ class App extends React.Component {
     };
   }
 
-  addArtwork = (notCached, newArtwork) => {
-    for (let i = 0; i < Object.keys(notCached).length; i++) {
-      notCached[Object.keys(notCached)[i]] = newArtwork[i].artwork;
-    }
-    this.setState({
-      albumArtwork: { ...this.state.albumArtwork, ...notCached },
-    });
-  };
-
-  addArtwork2 = async (notCached) => {
+  spotifyArtwork = async (notCached) => {
     if (Object.keys(notCached).length) {
       await axios
         .get("http://localhost:5000/api/spotify/tracks", {
@@ -54,7 +45,7 @@ class App extends React.Component {
         notCached[album] = albums[album];
       }
     });
-    await this.addArtwork2(notCached);
+    await this.spotifyArtwork(notCached);
   };
 
   formatDates = (start, end) => {

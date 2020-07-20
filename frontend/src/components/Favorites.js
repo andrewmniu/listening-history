@@ -68,40 +68,6 @@ class Favorites extends React.Component {
       });
   };
 
-  getArtwork = async (favorites) => {
-    const tracks = favorites.map((item) => {
-      return {
-        album: `${item.track.album} ${item.track.artist}`,
-        id: item.track.id,
-        albumArtwork: "",
-      };
-    });
-    const notCached = {};
-    tracks.forEach((track) => {
-      if (this.props.albumArtwork[track.album]) {
-        track.albumArtwork = this.props.albumArtwork[track.album];
-      } else if (!notCached[track.album]) {
-        notCached[track.album] = track.id;
-      }
-    });
-    if (Object.keys(notCached).length) {
-      await axios
-        .get("http://localhost:5000/api/spotify/tracks", {
-          params: { ids: Object.values(notCached) + "" },
-        })
-        .then((res) => {
-          this.props.addArtwork(notCached, res.data);
-        });
-    }
-    favorites.forEach((item) => {
-      item.track.artwork = this.props.albumArtwork[
-        `${item.track.album} ${item.track.artist}`
-      ];
-    });
-    this.setState({ data: favorites });
-    this.scroller.current.scrollTop = 0;
-  };
-
   handleDates = async (item) => {
     await this.setState({
       startDate: item.selection.startDate,
