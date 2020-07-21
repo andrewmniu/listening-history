@@ -36,12 +36,9 @@ class App extends React.Component {
 
   // albums: {'album artist': 'track id of track on album'}
   getArtwork = async (albums) => {
-    const artwork = {};
     const notCached = {};
     Object.keys(albums).forEach((album) => {
-      if (this.state.albumArtwork[album]) {
-        artwork[album] = this.state.albumArtwork[album];
-      } else if (!notCached[album]) {
+      if (!this.state.albumArtwork[album] & !notCached[album]) {
         notCached[album] = albums[album];
       }
     });
@@ -66,7 +63,6 @@ class App extends React.Component {
         />
       <Favorites
         albumArtwork={this.state.albumArtwork}
-        addArtwork={this.addArtwork}
         getArtwork={this.getArtwork}
         formatDates={this.formatDates}
         />

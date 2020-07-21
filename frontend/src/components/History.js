@@ -112,7 +112,8 @@ class History extends React.Component {
 
 History.propTypes = {
   albumArtwork: PropTypes.object.isRequired,
-  addArtwork: PropTypes.func.isRequired,
+  getArtwork: PropTypes.func.isRequired,
+  formatDates: PropTypes.func.isRequired
 };
 
 export default History;
