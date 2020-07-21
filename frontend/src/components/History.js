@@ -91,7 +91,7 @@ class History extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h1>History</h1>
+        <h1>Listening History</h1>
         <Calendar
           startDate={this.state.startDate}
           endDate={this.state.endDate}

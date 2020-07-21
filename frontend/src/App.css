@@ -20,3 +20,12 @@
 .calendar{
   width: 326px;
 }
+
+img {
+  max-width: 64px;
+  height: 64px;
+}
+
+input[type="radio"] {
+  visibility: hidden;
+}

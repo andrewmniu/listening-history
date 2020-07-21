@@ -85,7 +85,7 @@ FavoriteTracks.propTypes =  {
   endDate: PropTypes.instanceOf(Date).isRequired,
   getArtwork: PropTypes.func.isRequired,
   albumArtwork: PropTypes.object.isRequired,
-  scroller: PropTypes.func.isRequired
+  scroller: PropTypes.object.isRequired
 }
 
 export default FavoriteTracks;

@@ -3,7 +3,7 @@ import React from 'react'
 function Header() {
   return (
     <header>
-      <h1>Welcome to Andrew's Listening History</h1>
+      <h1>Welcome to Andrew's Spotify Dashboard</h1>
     </header>
   )
 }

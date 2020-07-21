@@ -29,7 +29,7 @@ class FavoriteAlbums extends React.Component {
         <li className="list-group-item" key={idx}>
           <img src={album.artwork} alt={album.album} />
           {album.album} by {album.artist} played{" "}
-          {album.times_played} times
+          {album.times_played} {album.times_played === 1 ? 'time' : 'times'}
         </li>
       );
     });
@@ -86,7 +86,7 @@ FavoriteAlbums.propTypes =  {
   endDate: PropTypes.instanceOf(Date).isRequired,
   getArtwork: PropTypes.func.isRequired,
   albumArtwork: PropTypes.object.isRequired,
-  scroller: PropTypes.func.isRequired
+  scroller: PropTypes.object.isRequired
 }
 
 export default FavoriteAlbums;
