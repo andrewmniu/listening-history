@@ -28,7 +28,7 @@ class TrackList(Resource):
             tracks = data['tracks']
         else:
             api.abort(404, 'id not found')
-        payload = [{'track_id': track['id'], 'album': track['album']['name'], 'artist': track['artists'][0]['name'], 'artist_id': track['artists'][0]['id'], 'artwork': track['album']['images'][2]['url']} for track in tracks if track]
+        payload = [{'track_id': track['id'], 'album': track['album']['name'], 'artist': track['artists'][0]['name'], 'artist_id': track['artists'][0]['id'], 'artwork': track['album']['images'][-1]['url']} for track in tracks if track]
         return payload
 
 spotify_artist_fields = api.model('Spotify Artist', {
@@ -48,5 +48,5 @@ class ArtistList(Resource):
             artists = data['artists']
         else:
             api.abort(404, 'id not found')
-        payload = [{'artist_id': artist['id'], 'artist': artist['name'], 'artist_image': artist['images'][2]['url']} for artist in artists if artist]
+        payload = [{'artist_id': artist['id'], 'artist': artist['name'], 'artist_image': artist['images'][-1]['url']} for artist in artists if artist and artist['name'] != 'Spotify']
         return payload
