@@ -36,6 +36,7 @@ class FavoriteTrackList(Resource, ParamDocumenter):
 
 artist_fields = api.model('Favorite Artist', {
     'artist': fields.String(description='Artist'),
+    'track_id': fields.String(description='Id of track by artist to get artist image on front end'),
     'times_played': fields.Integer(description='Number of tracks played by the artist')
 })
 
@@ -47,13 +48,13 @@ class FavoriteArtistList(Resource, ParamDocumenter):
         args = parser.parse_args()
         start, end = getTimeWindow(args)
         limit = args['limit'] if args['limit'] else 30
-        query = db.session.query(Track.artist,\
+        query = db.session.query(Track.artist, Track.id,\
             db.func.count(Track.artist).label('n'))\
             .select_from(History).join(Track, History.track_id == Track.id, isouter=True)\
             .filter(db.func.date(History.played_at) > start, db.func.date(History.played_at) < end)\
             .group_by(Track.artist)\
             .order_by(db.desc('n')).limit(limit).all()
-        payload = [{'artist': artist, 'times_played': plays} for artist, plays in query]
+        payload = [{'artist': artist, 'track_id': track_id, 'times_played': plays} for artist, track_id, plays in query]
         return payload
 
 album_fields = api.model('Favorite Album', {

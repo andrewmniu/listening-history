@@ -12,8 +12,8 @@ load_dotenv(dotenv_path)
 
 class SpotifyAPI:
     def __init__ (self):
-        # self.__access_token = self.getAccessToken()
-        self.__access_token = 'BQDgdlqGzDfskX2Qt2z6nJKtOF68o3SkAJ83BM9Fx7z2NUA67fDnpBWXGPR-Tzss1WLW0-bjJDTKuj_-YjHZEuytvGLsYDfBC8Oh5tOC-BCDyAsKZMdE3f2za7tG_5FuBw84e7qk7doEQJo91eET3WnkE96K2meRZ2Nk-NX14d6Vg_a0yrkpJUnmNU-M1F8o9t14PyytEUnIc6l3gY'
+        self.__access_token = self.getAccessToken()
+        # self.__access_token = 'BQDgdlqGzDfskX2Qt2z6nJKtOF68o3SkAJ83BM9Fx7z2NUA67fDnpBWXGPR-Tzss1WLW0-bjJDTKuj_-YjHZEuytvGLsYDfBC8Oh5tOC-BCDyAsKZMdE3f2za7tG_5FuBw84e7qk7doEQJo91eET3WnkE96K2meRZ2Nk-NX14d6Vg_a0yrkpJUnmNU-M1F8o9t14PyytEUnIc6l3gY'
 
     def __validateToken(api_call):
         @wraps(api_call)
@@ -58,11 +58,9 @@ class SpotifyAPI:
             print("refresh token has expired")
 
     @__validateToken
-    def Search(self):
-        url= 'https://api.spotify.com/v1/search'
-        query = f'Cattails Big Thief'
-        payload = {'q': query, 'type': 'track', 'limit': 8}
-        success = False
+    def get_artists(self, track_ids):
+        url= 'https://api.spotify.com/v1/artists'
+        payload={'ids': ','.join(track_ids)}
         response = requests.get(
             url,
             params=payload,

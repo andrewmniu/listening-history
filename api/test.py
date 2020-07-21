@@ -7,7 +7,7 @@ from models.spotify import SpotifyAPI
 
 api = SpotifyAPI()
 # print(api.Search())
-print(api.get_tracks(['623gFZ4VYa2EDu1D1sWFm0','65krgqLiZqW12PZAUQ9l2x']))
+print(api.get_artists(['3WrFJ7ztbogyGnTHbHJFl2','196lKsA13K3keVXMDFK66q']))
 
 #
 # {
