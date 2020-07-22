@@ -4,6 +4,7 @@ import "../css/History.css";
 import PaginationWrap from "./Pagination.js";
 import Calendar from "./Calendar.js";
 import PropTypes from "prop-types";
+import {subDays} from 'date-fns'
 
 class History extends React.Component {
   constructor(props) {
@@ -36,7 +37,10 @@ class History extends React.Component {
   };
 
   getHistory = () => {
-    const [startDate, endDate] = this.props.formatDates(this.state.startDate, this.state.endDate);
+    const [startDate, endDate] = this.props.formatDates(
+      this.state.startDate,
+      this.state.endDate
+    );
 
     let history;
     const payload = {
@@ -71,7 +75,21 @@ class History extends React.Component {
         });
         this.setState({ data: history });
         this.scroller.current.scrollTop = 0;
-      })
+      });
+  };
+
+  presetDates = (e) => {
+    let startDate, endDate;
+    switch(e.target.value){
+      case "This Week":
+        startDate = new Date();
+        endDate = subDays(startDate, 7);
+        console.log(endDate)
+        break;
+      default:
+        console.log('error');
+    }
+    this.setState({startDate, endDate})
   };
 
   handleDates = async (item) => {
@@ -96,6 +114,7 @@ class History extends React.Component {
           startDate={this.state.startDate}
           endDate={this.state.endDate}
           handleDates={this.handleDates}
+          presetDates={this.presetDates}
         ></Calendar>
         <ul className="history list-group" ref={this.scroller}>
           {this.renderList()}
@@ -113,7 +132,7 @@ class History extends React.Component {
 History.propTypes = {
   albumArtwork: PropTypes.object.isRequired,
   getArtwork: PropTypes.func.isRequired,
-  formatDates: PropTypes.func.isRequired
+  formatDates: PropTypes.func.isRequired,
 };
 
 export default History;

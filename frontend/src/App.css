@@ -29,3 +29,8 @@ img {
 input[type="radio"] {
   visibility: hidden;
 }
+
+.btn {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}

@@ -49,6 +49,8 @@ class App extends React.Component {
     const startDate = start.toISOString().substring(0, 10);
     let endDate = new Date(end.getTime() + 86400000);
     endDate = endDate.toISOString().substring(0, 10);
+    console.log(startDate)
+    console.log(endDate)
     return [startDate, endDate]
   }
 

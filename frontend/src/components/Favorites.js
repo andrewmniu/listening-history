@@ -3,6 +3,7 @@ import Calendar from "./Calendar.js";
 import FavoriteTracks from "./FavoriteTracks.js";
 import FavoriteArtists from "./FavoriteArtists.js";
 import FavoriteAlbums from "./FavoriteAlbums.js";
+import FavoriteButtons from "./FavoriteButtons.js";
 import PropTypes from "prop-types";
 
 class Favorites extends React.Component {
@@ -61,6 +62,11 @@ class Favorites extends React.Component {
     });
   };
 
+  changeItemType = (e) => {
+    console.log(e.target);
+    this.setState({ item: e.target.value });
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -74,34 +80,10 @@ class Favorites extends React.Component {
           endDate={this.state.endDate}
           handleDates={this.handleDates}
         ></Calendar>
-        <div className="btn-group control" data-toggle="buttons">
-          <button
-            className={`btn-primary ${ 'Tracks' === this.state.item ? 'active' : ''}`}
-            onClick={(e) => {
-              console.log(e.target)
-              this.setState({item: e.target.value})}}
-            value="Tracks"
-            id="ls-gallery"
-          >
-            <input type="radio" name="options" defaultChecked></input>
-          </button>
-          <button
-            className={`btn-primary ${ 'Artists' === this.state.item ? 'active' : ''}`}
-            onClick={(e) => this.setState({item: e.target.value})}
-            value="Artists"
-            id="ls-1"
-          >
-            <input type="radio" name="options"></input>
-          </button>
-          <button
-            className={`btn-primary ${ 'Albums' === this.state.item ? 'active' : ''}`}
-            onClick={(e) => this.setState({item: e.target.value})}
-            value="Albums"
-            id="ls-2"
-          >
-            <input type="radio" name="options"></input>
-          </button>
-        </div>
+        <FavoriteButtons
+          item={this.state.item}
+          changeItemType={this.changeItemType}
+        ></FavoriteButtons>
         <ul className="history list-group" ref={this.scroller}>
           {this.handleItemType()}
         </ul>
