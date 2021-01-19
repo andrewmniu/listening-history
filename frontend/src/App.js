@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import Header from "./components/Header.js";
 import History from "./components/History.js";
+import Activity from "./components/Activity.js";
 import Favorites from "./components/Favorites.js";
 
 import "./App.css";
@@ -63,6 +64,7 @@ class App extends React.Component {
           getArtwork={this.getArtwork}
           formatDates={this.formatDates}
         />
+      <Activity />
       <Favorites
         albumArtwork={this.state.albumArtwork}
         getArtwork={this.getArtwork}

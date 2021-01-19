@@ -1,6 +1,5 @@
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields, reqparse
 from models.spotify import SpotifyAPI
-from flask_restx import reqparse
 
 api = Namespace('spotify', description='Access favorite items')
 

@@ -11,7 +11,7 @@ class FavoriteButtons extends React.Component {
           value="Tracks"
           id="tracks"
         >
-          <input type="radio" name="options" defaultChecked></input>
+          <input className="favorite-selection" type="radio" name="options" defaultChecked/>
         </button>
         <button
           className={`btn-primary ${ 'Artists' === this.props.item ? 'active' : ''}`}
@@ -19,7 +19,7 @@ class FavoriteButtons extends React.Component {
           value="Artists"
           id="artists"
         >
-          <input type="radio" name="options"></input>
+          <input className="favorite-selection" type="radio" name="options"/>
         </button>
         <button
           className={`btn-primary ${ 'Albums' === this.props.item ? 'active' : ''}`}
@@ -27,7 +27,7 @@ class FavoriteButtons extends React.Component {
           value="Albums"
           id="albums"
         >
-          <input type="radio" name="options"></input>
+          <input className="favorite-selection" type="radio" name="options"/>
         </button>
       </div>
     )

@@ -54,6 +54,7 @@ class History extends React.Component {
         params: payload,
       })
       .then((res) => {
+        console.log(res)
         this.setState({ pages: res.data.pages });
         history = res.data.history;
       })

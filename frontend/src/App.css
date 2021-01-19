@@ -26,7 +26,7 @@ img {
   height: 64px;
 }
 
-input[type="radio"] {
+input[type="radio"].favorite-selection {
   visibility: hidden;
 }
 

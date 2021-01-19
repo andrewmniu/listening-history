@@ -117,7 +117,7 @@ class PaginationWrap extends React.Component {
           className={`page-item ${this.props.page === 1 ? "disabled" : ""}`}
           onClick={this.handlePagination}
         >
-          <a className="page-link" href="#">
+          <a className="page-link" href="http://localhost:3000/">
             ‹
           </a>
         </li>
@@ -128,7 +128,7 @@ class PaginationWrap extends React.Component {
           }`}
           onClick={this.handlePagination}
         >
-          <a className="page-link" href="#">
+          <a className="page-link" href="http://localhost:3000/">
             ›
           </a>
         </li>

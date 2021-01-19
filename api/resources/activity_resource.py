@@ -1,4 +1,4 @@
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields, reqparse, inputs
 from models.history import History
 from extensions import db
 from datetime import datetime, timedelta
@@ -6,18 +6,27 @@ from datetime import datetime, timedelta
 
 api = Namespace('activity', description='Access listening activity')
 
+parser = reqparse.RequestParser()
+parser.add_argument('desc', type=inputs.boolean, default=True, location='args')
+
+@api.param('desc', type=bool, description='order of results')
+class ParamDocumenter():
+    pass
+
 day_fields = api.model('Activity - Daily', {
     'date': fields.Date(description='Day'),
     'plays': fields.Integer(description='Number of tracks played on this date')
 })
 
 @api.route('/daily')
-class DailyActivity(Resource):
+class DailyActivity(Resource, ParamDocumenter):
     @api.marshal_list_with(day_fields)
     def get(self):
+        args = parser.parse_args()
+        order = db.desc(db.func.date(History.played_at)) if args['desc'] else db.func.date(History.played_at)
         query = db.session.query(db.func.date(History.played_at), db.func.count(History.track_id))\
         .group_by(db.func.date(History.played_at))\
-        .order_by(db.desc(db.func.date(History.played_at))).all()
+        .order_by(order).all()
         payload = [{'date': date, 'plays': plays} for date, plays in query]
         return payload
 
@@ -30,9 +39,11 @@ week_fields = api.model('Activity - Weekly', {
 class WeeklyActivity(Resource):
     @api.marshal_list_with(week_fields)
     def get(self):
+        args = parser.parse_args()
+        order = db.desc(db.func.date(History.played_at)) if args['desc'] else db.func.date(History.played_at)
         query = db.session.query(db.func.date(History.played_at),        db.func.count(History.track_id))\
         .group_by(db.func.yearweek(History.played_at))\
-        .order_by(db.desc(db.func.yearweek(History.played_at))).all()
+        .order_by(order).all()
         payload = []
         for week, plays in query:
             week = week - timedelta(days=week.weekday()-6) if week.weekday() == 6 else week - timedelta(days=week.weekday()+1)
@@ -49,6 +60,8 @@ month_fields = api.model('Activity - Monthly', {
 class MonthlyActivity(Resource):
     @api.marshal_list_with(month_fields)
     def get(self):
+        # args = parser.parse_args()
+        # order = db.desc(db.func.date(History.played_at)) if args['desc'] else db.func.date(History.played_at)
         query = db.session.query(db.func.year(History.played_at).label('Year'), db.func.monthname(History.played_at).label('Month'), db.func.count(History.track_id))\
         .group_by('Year', 'Month')\
         .order_by(db.desc('Year'), db.desc(db.func.month(History.played_at))).all()
