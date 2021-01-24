@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 class PaginationWrap extends React.Component {
   createPagination = () => {
     const items = [];
+    items.push(<Pagination.Prev onClick={this.handlePagination} />);
     const generate = (first, last) => {
       for (let i = first; i <= last; i++) {
         items.push(
@@ -69,7 +70,7 @@ class PaginationWrap extends React.Component {
       }
       generate(first, last);
       if (this.props.page !== this.props.pages - 3) {
-        items.push(<Pagination.Ellipsis key={this.props.pages+1} disabled />);
+        items.push(<Pagination.Ellipsis key={this.props.pages + 1} disabled />);
       }
       items.push(
         <Pagination.Item
@@ -81,6 +82,7 @@ class PaginationWrap extends React.Component {
         </Pagination.Item>
       );
     }
+    items.push(<Pagination.Next onClick={this.handlePagination} />);
 
     return items;
   };
@@ -89,14 +91,17 @@ class PaginationWrap extends React.Component {
     let page;
     if (
       e.target.classList.contains("disabled") ||
-      e.target.tagName === "SPAN"
+      (e.target.tagName === "SPAN" &&
+        !(e.target.textContent === "‹" || e.target.textContent === "›"))
     ) {
       return;
     }
-    switch (e.target.text) {
+    switch (e.target.textContent) {
+      case "‹Previous":
       case "‹":
         page = this.props.page === 1 ? 1 : this.props.page - 1;
         break;
+      case "›Next":
       case "›":
         page =
           this.props.page === this.props.pages
@@ -113,25 +118,7 @@ class PaginationWrap extends React.Component {
   render() {
     return (
       <Pagination size="sm" activepage={this.props.page}>
-        <li
-          className={`page-item ${this.props.page === 1 ? "disabled" : ""}`}
-          onClick={this.handlePagination}
-        >
-          <a className="page-link" href="http://localhost:3000/">
-            ‹
-          </a>
-        </li>
         {this.createPagination()}
-        <li
-          className={`page-item ${
-            this.props.page === this.props.pages ? "disabled" : ""
-          }`}
-          onClick={this.handlePagination}
-        >
-          <a className="page-link" href="http://localhost:3000/">
-            ›
-          </a>
-        </li>
       </Pagination>
     );
   }
@@ -140,7 +127,7 @@ class PaginationWrap extends React.Component {
 PaginationWrap.propTypes = {
   page: PropTypes.number.isRequired,
   pages: PropTypes.number.isRequired,
-  setPage: PropTypes.func.isRequired
-}
+  setPage: PropTypes.func.isRequired,
+};
 
 export default PaginationWrap;
