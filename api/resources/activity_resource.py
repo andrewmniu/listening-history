@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields, reqparse, inputs
 from models.history import History
+from models.track import Track
 from extensions import db
 from datetime import datetime, timedelta
 # from resources import parser, getTimeWindow
@@ -42,8 +43,9 @@ class WeeklyActivity(Resource):
         args = parser.parse_args()
         order = db.desc(db.func.date(History.played_at)) if args['desc'] else db.func.date(History.played_at)
         query = db.session.query(db.func.date(History.played_at),        db.func.count(History.track_id))\
-        .group_by(db.func.yearweek(History.played_at))\
-        .order_by(order).all()
+            .group_by(db.func.yearweek(History.played_at))\
+            .order_by(order).all()
+            
         payload = []
         for week, plays in query:
             week = week - timedelta(days=week.weekday()-6) if week.weekday() == 6 else week - timedelta(days=week.weekday()+1)
