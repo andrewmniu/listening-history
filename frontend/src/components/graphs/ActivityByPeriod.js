@@ -84,8 +84,8 @@ class ActivityByPeriod extends React.Component {
   componentDidMount = () => {
     this.getData();
     const d = new Date();
-    console.log(subDays(d, 7).setHours(0, 0, 0, 0));
-    console.log(d);
+    // console.log(subDays(d, 7).setHours(0, 0, 0, 0));
+    // console.log(d);
   };
 
   setMinMax = (chartContext, { xaxis }) => {
@@ -103,7 +103,7 @@ class ActivityByPeriod extends React.Component {
 
   getDaily = () => {
     axios.get(`http://localhost:5000/api/activity/daily?desc=false`).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       const series = [
         { name: "Number of Plays", data: res.data.map((item) => item.plays) },
       ];
@@ -134,7 +134,7 @@ class ActivityByPeriod extends React.Component {
 
   getWeekly = () => {
     axios.get(`http://localhost:5000/api/activity/weekly?desc=false`).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       const series = [
         { name: "Number of Plays", data: res.data.map((item) => item.plays) },
       ];
