@@ -15,18 +15,20 @@ track_fields = api.model('Track', {
 
 play_fields = api.model('Play', {
     'played_at': fields.DateTime(readOnly=True, description='Time that a track was played at'),
-    'track': fields.Nested(track_fields)
+    'track': fields.Nested(track_fields, description='Track information')
 })
 
 history_fields = api.model('History', {
     'page': fields.Integer(description='Page of results'),
     'pages': fields.Integer(description='Total number of pages of results'),
-    'history': fields.List(fields.Nested(play_fields))
+    'history': fields.List(fields.Nested(play_fields), description='Listening history')
 })
 
 @api.route('/')
 @api.param('per_page', type=int, description='number of tracks on each page')
 @api.param('page', type=int, description='page of tracks to return')
+@api.param('end', description='end date (exclusive): YYYY-MM-DD')
+@api.param('start', description='start date (inclusive): YYYY-MM-DD')
 class HistoryList(Resource):
     @api.marshal_list_with(history_fields)
     def get(self):

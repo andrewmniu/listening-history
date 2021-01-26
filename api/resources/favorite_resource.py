@@ -13,7 +13,7 @@ class ParamDocumenter():
     pass
 
 track_fields = api.model('Favorite Track', {
-    'track': fields.Nested(track_fields),
+    'track': fields.Nested(track_fields, description='Track information'),
     'times_played': fields.Integer(description='Artist of track played'),
 })
 
@@ -58,8 +58,8 @@ class FavoriteArtistList(Resource, ParamDocumenter):
         return payload
 
 album_fields = api.model('Favorite Album', {
-    'album': fields.String(description='Album'),
-    'artist': fields.String(descripton="Album's artist"),
+    'album': fields.String(description='Album name'),
+    'artist': fields.String(description="Album artist"),
     'track_id': fields.String(description='Id of track on album to get album artwork on front end'),
     'times_played': fields.Integer(description='Number of tracks played by the album')
 })
@@ -103,7 +103,6 @@ class FavoriteAlbumList(Resource, ParamDocumenter):
     # I'm honestly not sure how to make this simpler.
     @staticmethod
     def count_album_plays(history):
-        print(history)
         album_counts = {}
         prev_album = penult_album = ''
         count = prev_count = 0
