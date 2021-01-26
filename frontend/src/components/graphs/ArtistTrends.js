@@ -211,10 +211,10 @@ class ArtistTrends extends React.Component {
       })
       .then((res) => {
         const series = res.data.map((artist) => {
-          let d = artist.activity.map((item) => {
+          let series_data = artist.activity.map((item) => {
             return { x: item.week, y: item.plays };
           });
-          return { name: artist.name, data: d };
+          return { name: artist.name, data: series_data };
         });
         this.setState({
           options: {

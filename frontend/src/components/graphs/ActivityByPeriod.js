@@ -38,12 +38,9 @@ class ActivityByPeriod extends React.Component {
               speed: 150,
             },
           },
-          events: {
-            zoomed: this.setMinMax,
-          },
         },
         xaxis: {
-          categories: [],
+          type: "datetime",
         },
         yaxis: {
           min: 0,
@@ -84,103 +81,60 @@ class ActivityByPeriod extends React.Component {
   componentDidMount = () => {
     this.getData();
     const d = new Date();
-    // console.log(subDays(d, 7).setHours(0, 0, 0, 0));
-    // console.log(d);
-  };
-
-  setMinMax = (chartContext, { xaxis }) => {
-    this.setState({
-      options: {
-        ...this.state.options,
-        xaxis: {
-          ...this.state.xaxis,
-          min: xaxis.min,
-          max: xaxis.max,
-        },
-      },
-    });
   };
 
   getDaily = () => {
-    axios.get(`http://localhost:5000/api/activity/daily?desc=false`).then((res) => {
-      // console.log(res.data);
-      const series = [
-        { name: "Number of Plays", data: res.data.map((item) => item.plays) },
-      ];
-      this.setState({
-        options: {
-          ...this.state.options,
-          xaxis: {
-            ...this.state.options.xaxis,
-            categories: res.data.map((item) => {
-              const d = new Date(item.date);
-              return d.getTime();
-            }),
-            type: "datetime",
-            min: subDays(new Date(), 7).setHours(12, 0, 0, 0),
-            max: new Date().setHours(9, 0, 0, 0),
-            labels: {},
+    axios
+      .get(`http://localhost:5000/api/activity/daily`)
+      .then((res) => {
+
+        const series = [
+          { name: "Number of Plays", data: res.data.map((item) => [item.date, item.plays]) },
+        ];
+        this.setState({
+          options: {
+            ...this.state.options,
+            xaxis: {
+              ...this.state.options.xaxis,
+              min: subDays(new Date(), 7).setHours(12, 0, 0, 0),
+              max: new Date().setHours(9, 0, 0, 0),
+            },
+            title: {
+              ...this.state.options.title,
+              text: "Daily",
+            },
           },
-          tooltip: {},
-          title: {
-            ...this.state.options.title,
-            text: "Daily",
-          },
-        },
-        series,
+          series,
+        });
       });
-    });
   };
 
   getWeekly = () => {
-    axios.get(`http://localhost:5000/api/activity/weekly?desc=false`).then((res) => {
-      // console.log(res.data);
-      const series = [
-        { name: "Number of Plays", data: res.data.map((item) => item.plays) },
-      ];
-      this.setState({
-        options: {
-          ...this.state.options,
-          xaxis: {
-            ...this.state.options.xaxis,
-            categories: res.data.map((item) => {
-              const d = new Date(item.week);
-              return d.getTime();
-            }),
-            type: "numeric",
-            min: subMonths(new Date(), 1).setHours(0, 0, 0, 0),
-            max: new Date().setHours(0, 0, 0, 0),
-            labels: {
-              datetimeFormatter: {
-                year: "yyyy",
-                month: "MMM 'yy",
-                day: "dd MMM",
-                hour: "HH:mm",
-              },
-              formatter: function (value, timestamp, index) {
-                return moment(new Date(timestamp)).format("DD MMM YYYY");
-              },
+    axios
+      .get(`http://localhost:5000/api/activity/weekly?desc=false`)
+      .then((res) => {
+        const series = [
+          { name: "Number of Plays", data: res.data.map((item) => [item.week, item.plays]) },
+        ];
+        this.setState({
+          options: {
+            ...this.state.options,
+            xaxis: {
+              ...this.state.options.xaxis,
+              min: subMonths(new Date(), 1).setHours(0, 0, 0, 0)
+            },
+            title: {
+              ...this.state.options.title,
+              text: "Weekly",
             },
           },
-          tooltip: {
-            x: {
-              formatter: function (value, index) {
-                return moment(new Date(value)).format("MM/DD");
-              },
-            },
-          },
-          title: {
-            ...this.state.options.title,
-            text: "Weekly",
-          },
-        },
-        series,
+          series,
+        });
       });
-    });
   };
 
   getData = (time_frame) => {
-    switch(time_frame){
+    switch (time_frame) {
       case "daily":
         this.getDaily();
         break;
