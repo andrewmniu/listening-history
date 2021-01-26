@@ -4,7 +4,7 @@ import Header from "./components/Header.js";
 import History from "./components/History.js";
 import Activity from "./components/Activity.js";
 import Favorites from "./components/Favorites.js";
-import ApexChart from "./components/graphs/ArtistTrends.js"
+import ArtistTrends from "./components/graphs/ArtistTrends.js"
 
 import "./App.css";
 
@@ -51,8 +51,6 @@ class App extends React.Component {
     const startDate = start.toISOString().substring(0, 10);
     let endDate = new Date(end.getTime() + 86400000);
     endDate = endDate.toISOString().substring(0, 10);
-    console.log(startDate);
-    console.log(endDate);
     return [startDate, endDate];
   };
 
@@ -65,7 +63,7 @@ class App extends React.Component {
           getArtwork={this.getArtwork}
           formatDates={this.formatDates}
         />
-      <ApexChart />
+      <ArtistTrends />
         <Activity />
         <Favorites
           albumArtwork={this.state.albumArtwork}
